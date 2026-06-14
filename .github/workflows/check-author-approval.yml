@@ -1,0 +1,93 @@
+name: Check Author Approval
+
+on:
+  issue_comment:
+    types: [edited]
+
+jobs:
+  check-approval:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      issues: read
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            // Only check PR comments
+            if (!github.event.issue.pull_request) {
+              console.log('Not a PR comment, skipping');
+              return;
+            }
+            
+            const comment = github.event.comment;
+            const prNumber = github.event.issue.number;
+            const prAuthor = github.event.issue.user.login;
+            const editor = github.event.sender.login;
+            
+            // Check if comment contains our marker
+            if (!comment.body.includes('<!-- commit-checklist -->')) {
+              console.log('Not a commit checklist comment, skipping');
+              return;
+            }
+            
+            // Get PR details to find the base branch
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            
+            const branch = pr.head.ref;
+            
+            // Get all comments on this PR
+            const { data: comments } = await github.rest.issues.listComments({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            
+            // Find the latest comment with our marker
+            const commitComments = comments
+              .filter(c => c.body.includes('<!-- commit-checklist -->'))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            if (commitComments.length === 0) {
+              console.log('No commit checklist comments found');
+              return;
+            }
+            
+            const latestComment = commitComments[0];
+            
+            // Check if the edited comment is the latest one
+            if (comment.id !== latestComment.id) {
+              console.log('This is not the latest commit checklist comment, skipping');
+              return;
+            }
+            
+            // Check if the editor is the PR author
+            if (editor !== prAuthor) {
+              core.setFailed(`Approval must be given by PR author (${prAuthor}), but was edited by ${editor}`);
+              return;
+            }
+            
+            // Check if the "Yes, I've checked everything" checkbox is checked
+            const bodyLines = comment.body.split('\n');
+            const approvalLine = bodyLines.find(line => line.includes("Yes, I've checked everything"));
+            
+            if (!approvalLine) {
+              core.setFailed('Approval checkbox not found in comment');
+              return;
+            }
+            
+            if (approvalLine.includes('- [ ]')) {
+              core.setFailed('Approval checkbox is not checked');
+              return;
+            }
+            
+            if (approvalLine.includes('- [x]') || approvalLine.includes('- [X]')) {
+              console.log('✅ PR author has approved the checklist');
+              return;
+            }
+            
+            core.setFailed('Approval checkbox is in an unexpected state');
