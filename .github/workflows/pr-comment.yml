@@ -14,10 +14,39 @@ jobs:
       - uses: actions/github-script@v7
         with:
           script: |
-            const body = `- [ ] Check code style
+            const body = `## PR Checklist
+
+            ### 1. Table with checkmarks
+
+            | Task | Task |
+            | --- | --- |
+            | <ul><li>- [ ] Check code style</li></ul> | <ul><li>- [ ] Run tests</li></ul> |
+            | <ul><li>- [ ] Update documentation</li></ul> | <ul><li>- [ ] Add changelog entry</li></ul> |
+
+            ### 2. Table with checkmarks in <details><summary>
+
+            <details>
+            <summary>Click to expand checklist table</summary>
+
+            | Task | Task |
+            | --- | --- |
+            | <ul><li>- [ ] Check code style</li></ul> | <ul><li>- [ ] Run tests</li></ul> |
+            | <ul><li>- [ ] Update documentation</li></ul> | <ul><li>- [ ] Add changelog entry</li></ul> |
+
+            </details>
+
+            ### 3. Usual checkmark list in <details><summary>
+
+            <details>
+            <summary>Click to expand checklist</summary>
+
+            - [ ] Check code style
             - [ ] Run tests
             - [ ] Update documentation
-            - [ ] Add changelog entry`;
+            - [ ] Add changelog entry
+
+            </details>
+            `;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
