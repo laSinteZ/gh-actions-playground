@@ -16,45 +16,45 @@ jobs:
           script: |
             const body = `## PR Checklist
 
-### 1. Table with checkmarks
+            ### 1. Table with checkmarks
 
-| Task | Task |
-| --- | --- |
-| <ul><li>- [ ] Check code style</li></ul> | <ul><li>- [ ] Run tests</li></ul> |
-| <ul><li>- [ ] Update documentation</li></ul> | <ul><li>- [ ] Add changelog entry</li></ul> |
+            | Task | Task |
+            | --- | --- |
+            | <ul><li>- [ ] Check code style</li></ul> | <ul><li>- [ ] Run tests</li></ul> |
+            | <ul><li>- [ ] Update documentation</li></ul> | <ul><li>- [ ] Add changelog entry</li></ul> |
 
-### 2. Table with checkmarks in <details><summary>
+            ### 2. Table with checkmarks in <details><summary>
 
-<details>
-<summary>Click to expand checklist table</summary>
+            <details>
+            <summary>Click to expand checklist table</summary>
 
-| Task | Task |
-| --- | --- |
-| <ul><li>- [ ] Check code style</li></ul> | <ul><li>- [ ] Run tests</li></ul> |
-| <ul><li>- [ ] Update documentation</li></ul> | <ul><li>- [ ] Add changelog entry</li></ul> |
+            | Task | Task |
+            | --- | --- |
+            | <ul><li>- [ ] Check code style</li></ul> | <ul><li>- [ ] Run tests</li></ul> |
+            | <ul><li>- [ ] Update documentation</li></ul> | <ul><li>- [ ] Add changelog entry</li></ul> |
 
-</details>
+            </details>
 
-### 3. Usual checkmark list in <details><summary>
+            ### 3. Usual checkmark list in <details><summary>
 
-<details>
-<summary>Click to expand checklist</summary>
+            <details>
+            <summary>Click to expand checklist</summary>
 
-- [ ] Check code style
-- [ ] Run tests
-- [ ] Update documentation
-- [ ] Add changelog entry
+            - [ ] Check code style
+            - [ ] Run tests
+            - [ ] Update documentation
+            - [ ] Add changelog entry
 
-</details>
+            </details>
 
-### 4. Regular checkmark list
+            ### 4. Regular checkmark list
 
-- [ ] Check code style
-- [ ] Run tests
-- [ ] Update documentation
-- [ ] Add changelog entry
+            - [ ] Check code style
+            - [ ] Run tests
+            - [ ] Update documentation
+            - [ ] Add changelog entry
 
-`;
+            `;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
